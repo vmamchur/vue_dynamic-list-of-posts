@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { getAuthData, clearAuthData } from '@/utils/authStorage';
+
+const { name } = JSON.parse(getAuthData());
+
+const handleLogout = () => {
+  clearAuthData();
+}
+</script>
 
 <template>
   <nav className="navbar" role="navigation" aria-label="main navigation">
@@ -10,9 +18,9 @@
       <div className="navbar-item">
         <div className="buttons">
           <div className="mr-5 mb-2">
-            <p>User: {user.name}</p>
+            <p>User: {{ name }}</p>
           </div>
-          <a className="button is-light">Logout</a>
+          <router-link to="/sign-in" @click="handleLogout" className="button is-light">Logout</router-link>
         </div>
       </div>
     </div>
