@@ -33,7 +33,7 @@ const handleLogin = async (email: string) => {
       emailError.value = 'User not found'
     }
   } catch (e) {
-    console.log(emailError)
+    console.log(e)
     emailError.value = 'Something went wrong'
   }
 }
@@ -74,7 +74,7 @@ watch(email, () => {
 
               <p v-if="emailError.length" class="help is-danger">{{ emailError }}</p>
             </div>
-            
+
             <div class="field is-flex is-justify-content-space-between is-align-items-center">
               <button type="submit" class="button is-primary">Submit</button>
               <router-link to="/sign-up" class="has-text-primary">Sign up</router-link>

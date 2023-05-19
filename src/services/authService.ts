@@ -8,5 +8,9 @@ export const register = (email: string, name: string) => {
 };
 
 export const login = (email: string) => {
-  return client.get(`/users?email=${email}`);
+  return client.get(`/users`, {
+    params: {
+      email,
+    },
+  });
 };
