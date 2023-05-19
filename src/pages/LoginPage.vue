@@ -8,17 +8,17 @@ import isValidEmail from '@/utils/isValidEmail'
 
 const router = useRouter()
 
-const email = ref('')
-const emailError = ref('')
+const emailRef = ref('')
+const emailErrorRef = ref('')
 
 const handleLogin = async (email: string) => {
   if (!email.length) {
-    emailError.value = 'Email is required'
+    emailErrorRef.value = 'Email is required'
     return
   }
 
   if (!isValidEmail(email)) {
-    emailError.value = 'Invalid email format'
+    emailErrorRef.value = 'Invalid email format'
     return
   }
 
@@ -30,17 +30,17 @@ const handleLogin = async (email: string) => {
       saveAuthData(foundUser)
       router.push('/')
     } else {
-      emailError.value = 'User not found'
+      emailErrorRef.value = 'User not found'
     }
   } catch (e) {
     console.log(e)
-    emailError.value = 'Something went wrong'
+    emailErrorRef.value = 'Something went wrong'
   }
 }
 
-watch(email, () => {
-  if (emailError.value.length) {
-    emailError.value = ''
+watch(emailRef, () => {
+  if (emailErrorRef.value.length) {
+    emailErrorRef.value = ''
   }
 })
 </script>
@@ -50,7 +50,7 @@ watch(email, () => {
     <div class="container">
       <div class="tile is-ancestor">
         <section class="container is-flex is-justify-content-center">
-          <form @submit.prevent="handleLogin(email)" class="box mt-5">
+          <form @submit.prevent="handleLogin(emailRef)" class="box mt-5">
             <h1 class="title is-3">Sign in</h1>
 
             <div class="field">
@@ -58,8 +58,8 @@ watch(email, () => {
 
               <div class="control has-icons-left">
                 <input
-                  v-model="email"
-                  :class="{ 'is-danger': emailError.length }"
+                  v-model="emailRef"
+                  :class="{ 'is-danger': emailErrorRef.length }"
                   class="input"
                   type="text"
                   id="user-email"
@@ -72,7 +72,7 @@ watch(email, () => {
                 </span>
               </div>
 
-              <p v-if="emailError.length" class="help is-danger">{{ emailError }}</p>
+              <p v-if="emailErrorRef.length" class="help is-danger">{{ emailErrorRef }}</p>
             </div>
 
             <div class="field is-flex is-justify-content-space-between is-align-items-center">

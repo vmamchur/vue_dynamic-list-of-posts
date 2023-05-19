@@ -16,20 +16,20 @@ const props = defineProps<{
 
 const emit = defineEmits(['edit', 'remove'])
 
-const { name, email } = JSON.parse(getAuthData());
+const { name, email } = JSON.parse(getAuthData())
 
-const comments = ref<IComment[]>([])
-const commentsError = ref('')
-const isEditing = ref(false)
-const isCommentCreating = ref(false)
+const commentsRef = ref<IComment[]>([])
+const commentsErrorRef = ref('')
+const isEditingRef = ref(false)
+const isCommentCreatingRef = ref(false)
 
 const loadComments = async () => {
   try {
     const { data } = await getComments(props.selectedPost.id)
 
-    comments.value = data
+    commentsRef.value = data
   } catch (e) {
-    commentsError.value = 'Unable to load comments'
+    commentsErrorRef.value = 'Unable to load comments'
     console.log(e)
   }
 }
@@ -42,8 +42,8 @@ const handleCreateComment = async (comment: ICommentCreation) => {
   try {
     const { data } = await createComment(comment)
 
-    comments.value = [...comments.value, data]
-    isCommentCreating.value = false
+    commentsRef.value = [...commentsRef.value, data]
+    isCommentCreatingRef.value = false
   } catch (e) {
     console.log(e)
   }
@@ -53,7 +53,7 @@ const handleDeleteComment = async (id: number) => {
   try {
     await deleteComment(id)
 
-    comments.value = comments.value.filter((comment) => comment.id !== id)
+    commentsRef.value = commentsRef.value.filter((comment) => comment.id !== id)
   } catch (e) {
     console.log(e)
   }
@@ -65,12 +65,12 @@ watch(
     if (curr !== prev) {
       loadComments()
 
-      if (isEditing.value) {
-        isEditing.value = false
+      if (isEditingRef.value) {
+        isEditingRef.value = false
       }
 
-      if (isCommentCreating.value) {
-        isCommentCreating.value = false
+      if (isCommentCreatingRef.value) {
+        isCommentCreatingRef.value = false
       }
     }
   }
@@ -79,7 +79,7 @@ watch(
 
 <template>
   <EditPostComponent
-    v-if="isEditing"
+    v-if="isEditingRef"
     @save="
       $emit('edit', {
         id: $event.id,
@@ -88,7 +88,7 @@ watch(
         body: $event.body
       })
     "
-    @cancel="isEditing = false"
+    @cancel="isEditingRef = false"
     :selectedPost="selectedPost"
   />
 
@@ -97,7 +97,7 @@ watch(
       <div class="is-flex is-justify-content-space-between is-align-items-center">
         <h2>#{{ selectedPost.id }}: {{ selectedPost.title }}</h2>
         <div class="is-flex">
-          <span @click="isEditing = true" class="icon is-small is-right is-clickable">
+          <span @click="isEditingRef = true" class="icon is-small is-right is-clickable">
             <i class="fas fa-pen-to-square"></i>
           </span>
 
@@ -113,7 +113,7 @@ watch(
     </div>
 
     <AddCommentComponent
-      v-if="isCommentCreating"
+      v-if="isCommentCreatingRef"
       @create="
         handleCreateComment({
           postId: selectedPost.id,
@@ -122,13 +122,13 @@ watch(
           body: $event
         })
       "
-      @cancel="isCommentCreating = false"
+      @cancel="isCommentCreatingRef = false"
     />
 
     <div v-else class="block">
-      <template v-if="comments.length">
+      <template v-if="commentsRef.length">
         <CommentComponent
-          v-for="comment of comments"
+          v-for="comment of commentsRef"
           @remove="handleDeleteComment"
           :key="comment.id"
           :comment="comment"
@@ -136,13 +136,15 @@ watch(
       </template>
 
       <template v-else>
-        <p v-if="!comments.length && !commentsError.length" class="title is-4">No comments yet</p>
-        <p v-else-if="commentsError.length" class="title is-4 has-text-danger">
-          {{ commentsError }}
+        <p v-if="!commentsRef.length && !commentsErrorRef.length" class="title is-4">
+          No comments yet
+        </p>
+        <p v-else-if="commentsErrorRef.length" class="title is-4 has-text-danger">
+          {{ commentsErrorRef }}
         </p>
       </template>
 
-      <button @click="isCommentCreating = true" type="button" className="button is-link">
+      <button @click="isCommentCreatingRef = true" type="button" className="button is-link">
         Write a comment
       </button>
     </div>

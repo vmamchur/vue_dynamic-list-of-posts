@@ -13,24 +13,24 @@ import PostPreviewComponent from '@/components/PostPreviewComponent.vue'
 
 const { id: userId } = JSON.parse(getAuthData())
 
-const posts = ref<IPost[]>([])
-const selectedPost = ref<IPost | null>(null)
-const isPostCreating = ref(false)
-const isLoading = ref(false)
-const postsError = ref('')
+const postsRef = ref<IPost[]>([])
+const selectedPostRef = ref<IPost | null>(null)
+const isPostCreatingRef = ref(false)
+const isLoadingRef = ref(false)
+const postsErrorRef = ref('')
 
 const loadPosts = async () => {
-  isLoading.value = true
+  isLoadingRef.value = true
 
   try {
     const { data } = await getPosts(userId)
 
-    posts.value = data
-    isLoading.value = false
+    postsRef.value = data
+    isLoadingRef.value = false
   } catch (e) {
     console.log(e)
-    isLoading.value = false
-    postsError.value = 'Failed to load posts'
+    isLoadingRef.value = false
+    postsErrorRef.value = 'Failed to load posts'
   }
 }
 
@@ -42,9 +42,9 @@ const handleCreatePost = async (post: IPostCreation) => {
   try {
     const { data } = await createPost(post)
 
-    selectedPost.value = data
-    posts.value = [...posts.value, data]
-    isPostCreating.value = false
+    selectedPostRef.value = data
+    postsRef.value = [...postsRef.value, data]
+    isPostCreatingRef.value = false
   } catch (e) {
     console.log(e)
   }
@@ -53,10 +53,10 @@ const handleCreatePost = async (post: IPostCreation) => {
 const handleUpdatePost = async (id: number, post: IPostCreation) => {
   try {
     const { data } = await updatePost(id, post)
-    const postIndex = posts.value.findIndex((post) => post.id === id)
+    const postIndex = postsRef.value.findIndex((post) => post.id === id)
 
-    posts.value[postIndex] = data
-    selectedPost.value = data;
+    postsRef.value[postIndex] = data
+    selectedPostRef.value = data
   } catch (e) {
     console.log(e)
   }
@@ -66,27 +66,27 @@ const handleDeletePost = async (id: number) => {
   try {
     await deletePost(id)
 
-    selectedPost.value = null
-    posts.value = posts.value.filter((post) => post.id !== id)
+    selectedPostRef.value = null
+    postsRef.value = postsRef.value.filter((post) => post.id !== id)
   } catch (e) {
     console.log(e)
   }
 }
 
 const handleShowCreatePostForm = () => {
-  if (selectedPost.value) {
-    selectedPost.value = null
+  if (selectedPostRef.value) {
+    selectedPostRef.value = null
   }
 
-  isPostCreating.value = true
+  isPostCreatingRef.value = true
 }
 
 const handleSelectPost = (post: IPost) => {
-  if (isPostCreating.value) {
-    isPostCreating.value = false
+  if (isPostCreatingRef.value) {
+    isPostCreatingRef.value = false
   }
 
-  selectedPost.value = post
+  selectedPostRef.value = post
 }
 </script>
 
@@ -97,18 +97,18 @@ const handleSelectPost = (post: IPost) => {
     <div class="container">
       <div class="tile is-ancestor">
         <PostsListComponent
-          :posts="posts"
-          :selectedPost="selectedPost"
-          :isPostCreating="isPostCreating"
-          :isLoading="isLoading"
-          :postsError="postsError"
+          :posts="postsRef"
+          :selectedPost="selectedPostRef"
+          :isPostCreating="isPostCreatingRef"
+          :isLoading="isLoadingRef"
+          :postsError="postsErrorRef"
           @open="handleShowCreatePostForm"
           @select="handleSelectPost"
         />
 
-        <SidebarComponent :class="{ 'Sidebar--open': isPostCreating || selectedPost }">
+        <SidebarComponent :class="{ 'Sidebar--open': isPostCreatingRef || selectedPostRef }">
           <PostPreviewComponent
-            v-if="selectedPost"
+            v-if="selectedPostRef"
             @edit="
               handleUpdatePost($event.id, {
                 userId: $event.userId,
@@ -117,12 +117,12 @@ const handleSelectPost = (post: IPost) => {
               })
             "
             @remove="handleDeletePost"
-            :selectedPost="selectedPost"
+            :selectedPost="selectedPostRef"
           />
 
           <AddPostComponent
-            v-else-if="isPostCreating"
-            @close="isPostCreating = false"
+            v-else-if="isPostCreatingRef"
+            @close="isPostCreatingRef = false"
             @create="
               handleCreatePost({
                 userId,

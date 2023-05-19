@@ -3,39 +3,39 @@ import { ref, watch } from 'vue'
 
 const emit = defineEmits(['close', 'create'])
 
-const title = ref('')
-const body = ref('')
-const titleError = ref('')
-const bodyError = ref('')
+const titleRef = ref('')
+const bodyRef = ref('')
+const titleErrorRef = ref('')
+const bodyErrorRef = ref('')
 
-const handleSubmit = () => {
-  if (!title.value.length) {
-    titleError.value = 'Title is required'
+const handleSubmit = (title: string, body: string) => {
+  if (!title.length) {
+    titleErrorRef.value = 'Title is required'
   }
 
-  if (!body.value.length) {
-    bodyError.value = 'Body is required'
+  if (!body.length) {
+    bodyErrorRef.value = 'Body is required'
   }
 
-  if (titleError.value.length || bodyError.value.length) {
+  if (titleErrorRef.value.length || bodyErrorRef.value.length) {
     return
   }
 
-  emit('create', { title: title.value, body: body.value })
+  emit('create', { title, body })
 
-  title.value = ''
-  body.value = ''
+  titleRef.value = ''
+  bodyRef.value = ''
 }
 
-watch(title, () => {
-  if (titleError.value.length) {
-    titleError.value = ''
+watch(titleRef, () => {
+  if (titleErrorRef.value.length) {
+    titleErrorRef.value = ''
   }
 })
 
-watch(body, () => {
-  if (bodyError.value.length) {
-    bodyError.value = ''
+watch(bodyRef, () => {
+  if (bodyErrorRef.value.length) {
+    bodyErrorRef.value = ''
   }
 })
 </script>
@@ -44,13 +44,13 @@ watch(body, () => {
   <div className="content">
     <h2>Create new post</h2>
 
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit(titleRef, bodyRef)">
       <div class="field">
         <label class="label" for="comment-author-name-title">Title</label>
         <div class="control has-icons-left has-icons-right">
           <input
-            v-model="title"
-            :class="{ 'is-danger': titleError.length }"
+            v-model="titleRef"
+            :class="{ 'is-danger': titleErrorRef.length }"
             class="input"
             type="text"
             name="title"
@@ -61,20 +61,20 @@ watch(body, () => {
             <i class="fas fa-user"></i>
           </span>
 
-          <span v-if="titleError.length" class="icon is-small is-right has-text-danger">
+          <span v-if="titleErrorRef.length" class="icon is-small is-right has-text-danger">
             <i class="fas fa-exclamation-triangle"></i>
           </span>
         </div>
 
-        <p v-if="titleError.length" class="help is-danger">{{ titleError }}</p>
+        <p v-if="titleErrorRef.length" class="help is-danger">{{ titleErrorRef }}</p>
       </div>
 
       <div class="field">
         <label class="label" for="comment-body">Write post body</label>
         <div class="control">
           <textarea
-            v-model="body"
-            :class="{ 'is-danger': bodyError.length }"
+            v-model="bodyRef"
+            :class="{ 'is-danger': bodyErrorRef.length }"
             class="textarea"
             id="comment-body"
             name="body"
@@ -82,7 +82,7 @@ watch(body, () => {
           ></textarea>
         </div>
 
-        <p v-if="bodyError.length" class="help is-danger">{{ bodyError }}</p>
+        <p v-if="bodyErrorRef.length" class="help is-danger">{{ bodyErrorRef }}</p>
       </div>
 
       <div className="field is-grouped">
