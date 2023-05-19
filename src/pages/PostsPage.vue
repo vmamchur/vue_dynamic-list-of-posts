@@ -9,13 +9,15 @@ import HeaderComponent from '@/components/HeaderComponent.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
 import PostsListComponent from '@/components/PostsListComponent.vue'
 import AddPostComponent from '@/components/AddPostComponent.vue'
+import PostPreviewComponent from '@/components/PostPreviewComponent.vue'
 
 const { id: userId } = JSON.parse(getAuthData())
 
 const posts = ref<IPost[]>([])
+const selectedPost = ref<IPost | null>(null)
+const isPostCreating = ref(false)
 const isLoading = ref(false)
 const postsError = ref('')
-const isSidebarOpen = ref(false)
 
 const loadPosts = async () => {
   isLoading.value = true
@@ -37,8 +39,30 @@ onMounted(() => {
 })
 
 const handleCreatePost = async (post: IPostCreation) => {
-  await createPost(post)
-  loadPosts();
+  try {
+    const { data } = await createPost(post)
+
+    selectedPost.value = data
+    loadPosts()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const handleShowCreatePostForm = () => {
+  if (selectedPost.value) {
+    selectedPost.value = null
+  }
+
+  isPostCreating.value = true
+}
+
+const handleSelectPost = (post: IPost) => {
+  if (isPostCreating.value) {
+    isPostCreating.value = false
+  }
+
+  selectedPost.value = post
 }
 </script>
 
@@ -50,14 +74,20 @@ const handleCreatePost = async (post: IPostCreation) => {
       <div class="tile is-ancestor">
         <PostsListComponent
           :posts="posts"
+          :selectedPost="selectedPost"
+          :isPostCreating="isPostCreating"
           :isLoading="isLoading"
           :postsError="postsError"
-          @open="isSidebarOpen = true"
+          @open="handleShowCreatePostForm"
+          @select="handleSelectPost($event)"
         />
 
-        <SidebarComponent :class="{ 'Sidebar--open': isSidebarOpen }">
+        <SidebarComponent :class="{ 'Sidebar--open': isPostCreating || selectedPost }">
+          <PostPreviewComponent v-if="selectedPost" :selectedPost="selectedPost" />
+
           <AddPostComponent
-            @close="isSidebarOpen = false"
+            v-else-if="isPostCreating"
+            @close="isPostCreating = false"
             @create="
               handleCreatePost({
                 userId,

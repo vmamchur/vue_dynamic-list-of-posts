@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import { type IPost } from '@/types/IPost'
+
 const props = defineProps<{
-  postId: number
-  postTitle: string
-  postBody: string
+  selectedPost: IPost
 }>()
 </script>
 
 <template>
   <div class="block">
     <div class="is-flex is-justify-content-space-between is-align-items-center">
-      <h2>#{{ postId }}: {{ postTitle }}</h2>
+      <h2>#{{ selectedPost.id }}: {{ selectedPost.title }}</h2>
       <div class="is-flex">
         <span class="icon is-small is-right is-clickable">
           <i class="fas fa-pen-to-square"></i>
@@ -20,7 +20,7 @@ const props = defineProps<{
         </span>
       </div>
     </div>
-    <p data-cy="PostBody">{{ postBody }}</p>
+    <p data-cy="PostBody">{{ selectedPost.body }}</p>
   </div>
 </template>
 

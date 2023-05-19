@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import type { IPost } from '@/types/IPost'
+import { type IPost } from '@/types/IPost'
 import LoaderComponent from './LoaderComponent.vue'
 
-defineProps<{
+const props = defineProps<{
   posts: IPost[]
+  selectedPost: IPost | null
+  isPostCreating: boolean
   isLoading: boolean
   postsError: string
 }>()
 
-defineEmits(['open'])
+const emit = defineEmits(['open', 'close', 'select'])
+
+const handleSelectPost = (post: IPost) => {
+  emit('select', post)
+}
+
+const handleUnselectPost = () => {
+  emit('select', null)
+}
 </script>
 
 <template>
@@ -17,7 +27,14 @@ defineEmits(['open'])
       <div class="block">
         <div class="block is-flex is-justify-content-space-between">
           <p class="title">Posts</p>
-          <button @click="$emit('open')" type="button" class="button is-link">Add New Post</button>
+          <button
+            @click="$emit('open')"
+            :class="{ 'is-light': isPostCreating }"
+            class="button is-link"
+            type="button"
+          >
+            Add New Post
+          </button>
         </div>
 
         <div v-if="isLoading" class="is-flex is-justify-content-center is-align-items-center mt-2">
@@ -45,7 +62,22 @@ defineEmits(['open'])
                 <td>{{ post.id }}</td>
                 <td>{{ post.title }}</td>
                 <td class="has-text-right is-vcentered">
-                  <button type="button" class="button is-link">Open</button>
+                  <button
+                    v-if="selectedPost?.id === post.id"
+                    @click="handleUnselectPost"
+                    type="button"
+                    class="button is-link"
+                  >
+                    Close
+                  </button>
+                  <button
+                    v-else
+                    @click="handleSelectPost(post)"
+                    type="button"
+                    class="button is-link is-light"
+                  >
+                    Open
+                  </button>
                 </td>
               </tr>
             </tbody>
