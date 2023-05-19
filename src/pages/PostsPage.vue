@@ -30,7 +30,7 @@ const loadPosts = async () => {
   } catch (e) {
     console.log(e)
     isLoading.value = false
-    postsError.value = 'Failed to load data'
+    postsError.value = 'Failed to load posts'
   }
 }
 
@@ -103,7 +103,7 @@ const handleSelectPost = (post: IPost) => {
           :isLoading="isLoading"
           :postsError="postsError"
           @open="handleShowCreatePostForm"
-          @select="handleSelectPost($event)"
+          @select="handleSelectPost"
         />
 
         <SidebarComponent :class="{ 'Sidebar--open': isPostCreating || selectedPost }">
@@ -116,7 +116,7 @@ const handleSelectPost = (post: IPost) => {
                 body: $event.body
               })
             "
-            @remove="handleDeletePost($event)"
+            @remove="handleDeletePost"
             :selectedPost="selectedPost"
           />
 

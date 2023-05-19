@@ -8,29 +8,29 @@ import isValidEmail from '@/utils/isValidEmail'
 
 const router = useRouter()
 
-const email = ref('')
-const name = ref('')
-const emailError = ref('')
-const nameError = ref('')
+const emailRef = ref('')
+const nameRef = ref('')
+const emailErrorRef = ref('')
+const nameErrorRef = ref('')
 
-const handleRegister = async (email: string, name: string) => {  
+const handleRegister = async (email: string, name: string) => {
   if (!isValidEmail(email)) {
-    emailError.value = 'Invalid email format'
+    emailErrorRef.value = 'Invalid email format'
   }
 
   if (!email.length) {
-    emailError.value = 'Email is required'
+    emailErrorRef.value = 'Email is required'
   }
 
   if (name.length < 4) {
-    nameError.value = 'Name must be at least 4 characters long'
+    nameErrorRef.value = 'Name must be at least 4 characters long'
   }
 
   if (!name.length) {
-    nameError.value = 'Name is required'
+    nameErrorRef.value = 'Name is required'
   }
 
-  if (emailError.value.length || nameError.value.length) {
+  if (emailErrorRef.value.length || nameErrorRef.value.length) {
     return
   }
 
@@ -42,20 +42,20 @@ const handleRegister = async (email: string, name: string) => {
     router.push('/')
   } catch (e) {
     console.log(e)
-    emailError.value = 'Something went wrong'
-    nameError.value = 'Something went wrong'
+    emailErrorRef.value = 'Something went wrong'
+    nameErrorRef.value = 'Something went wrong'
   }
 }
 
-watch(email, () => {
-  if (emailError.value.length) {
-    emailError.value = ''
+watch(emailRef, () => {
+  if (emailErrorRef.value.length) {
+    emailErrorRef.value = ''
   }
 })
 
-watch(name, () => {
-  if (nameError.value.length) {
-    nameError.value = ''
+watch(nameRef, () => {
+  if (nameErrorRef.value.length) {
+    nameErrorRef.value = ''
   }
 })
 </script>
@@ -65,7 +65,7 @@ watch(name, () => {
     <div class="container">
       <div class="tile is-ancestor">
         <section class="container is-flex is-justify-content-center">
-          <form @submit.prevent="handleRegister(email, name)" class="box mt-5">
+          <form @submit.prevent="handleRegister(emailRef, nameRef)" class="box mt-5">
             <h1 class="title is-3">Sign up</h1>
 
             <div class="field">
@@ -73,8 +73,8 @@ watch(name, () => {
 
               <div class="control has-icons-left">
                 <input
-                  v-model="email"
-                  :class="{ 'is-danger': emailError.length }"
+                  v-model="emailRef"
+                  :class="{ 'is-danger': emailErrorRef.length }"
                   class="input"
                   type="text"
                   id="user-email"
@@ -87,7 +87,7 @@ watch(name, () => {
                 </span>
               </div>
 
-              <p v-if="emailError.length" class="help is-danger">{{ emailError }}</p>
+              <p v-if="emailErrorRef.length" class="help is-danger">{{ emailErrorRef }}</p>
             </div>
 
             <div class="field">
@@ -95,8 +95,8 @@ watch(name, () => {
 
               <div class="control has-icons-left">
                 <input
-                  v-model="name"
-                  :class="{ 'is-danger': nameError.length }"
+                  v-model="nameRef"
+                  :class="{ 'is-danger': nameErrorRef.length }"
                   class="input"
                   type="text"
                   id="user-name"
@@ -109,7 +109,7 @@ watch(name, () => {
                 </span>
               </div>
 
-              <p v-if="nameError.length" class="help is-danger">{{ nameError }}</p>
+              <p v-if="nameErrorRef.length" class="help is-danger">{{ nameErrorRef }}</p>
             </div>
 
             <div class="field is-flex is-justify-content-space-between is-align-items-center">
