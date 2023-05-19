@@ -2,8 +2,9 @@
 import { onMounted, ref } from 'vue'
 
 import { type IPost } from '@/types/IPost'
+import { type IPostCreation } from '@/types/IPostCreation'
 import { getAuthData } from '@/utils/authStorage'
-import { getPosts } from '@/services/postsService'
+import { createPost, getPosts } from '@/services/postsService'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
 import PostsListComponent from '@/components/PostsListComponent.vue'
@@ -16,7 +17,7 @@ const isLoading = ref(false)
 const postsError = ref('')
 const isSidebarOpen = ref(false)
 
-onMounted(async () => {
+const loadPosts = async () => {
   isLoading.value = true
 
   try {
@@ -29,7 +30,16 @@ onMounted(async () => {
     isLoading.value = false
     postsError.value = 'Failed to load data'
   }
+}
+
+onMounted(() => {
+  loadPosts()
 })
+
+const handleCreatePost = async (post: IPostCreation) => {
+  await createPost(post)
+  loadPosts();
+}
 </script>
 
 <template>
@@ -46,7 +56,16 @@ onMounted(async () => {
         />
 
         <SidebarComponent :class="{ 'Sidebar--open': isSidebarOpen }">
-          <AddPostComponent @close="isSidebarOpen = false" />
+          <AddPostComponent
+            @close="isSidebarOpen = false"
+            @create="
+              handleCreatePost({
+                userId,
+                title: $event.title,
+                body: $event.body
+              })
+            "
+          />
         </SidebarComponent>
       </div>
     </div>

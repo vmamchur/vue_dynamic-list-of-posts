@@ -1,5 +1,4 @@
-export interface IPost {
-  id: number;
+export interface IPostCreation {
   userId: number;
   title: string;
   body: string;

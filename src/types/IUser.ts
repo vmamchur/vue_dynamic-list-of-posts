@@ -5,6 +5,4 @@ export interface IUser {
   phone?: string;
   username?: string;
   website?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
