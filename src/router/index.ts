@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHashHistory, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import PostsPage from '@/pages/PostsPage.vue';
 import RegistrationPage from '@/pages/RegistrationPage.vue';
 import LoginPage from '@/pages/LoginPage.vue';
@@ -26,7 +26,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(''),
+  history: createWebHashHistory(),
   routes,
 });
 
