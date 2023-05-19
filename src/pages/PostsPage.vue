@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { type IPost } from '@/types/IPost'
 import { type IPostCreation } from '@/types/IPostCreation'
 import { getAuthData } from '@/utils/authStorage'
-import { createPost, getPosts } from '@/services/postsService'
+import { createPost, deletePost, getPosts, updatePost } from '@/services/postsService'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
 import PostsListComponent from '@/components/PostsListComponent.vue'
@@ -43,7 +43,31 @@ const handleCreatePost = async (post: IPostCreation) => {
     const { data } = await createPost(post)
 
     selectedPost.value = data
-    loadPosts()
+    posts.value = [...posts.value, data]
+    isPostCreating.value = false
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const handleUpdatePost = async (id: number, post: IPostCreation) => {
+  try {
+    const { data } = await updatePost(id, post)
+    const postIndex = posts.value.findIndex((post) => post.id === id)
+
+    posts.value[postIndex] = data
+    selectedPost.value = data;
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const handleDeletePost = async (id: number) => {
+  try {
+    await deletePost(id)
+
+    selectedPost.value = null
+    posts.value = posts.value.filter((post) => post.id !== id)
   } catch (e) {
     console.log(e)
   }
@@ -83,7 +107,18 @@ const handleSelectPost = (post: IPost) => {
         />
 
         <SidebarComponent :class="{ 'Sidebar--open': isPostCreating || selectedPost }">
-          <PostPreviewComponent v-if="selectedPost" :selectedPost="selectedPost" />
+          <PostPreviewComponent
+            v-if="selectedPost"
+            @edit="
+              handleUpdatePost($event.id, {
+                userId: $event.userId,
+                title: $event.title,
+                body: $event.body
+              })
+            "
+            @remove="handleDeletePost($event)"
+            :selectedPost="selectedPost"
+          />
 
           <AddPostComponent
             v-else-if="isPostCreating"

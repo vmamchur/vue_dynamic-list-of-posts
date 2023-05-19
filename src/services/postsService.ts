@@ -16,3 +16,11 @@ export const getPostById = (id: number) => {
 export const createPost = (post: IPostCreation) => {
   return client.post('/posts', post);
 };
+
+export const deletePost = (id: number) => {
+  return client.delete(`/posts/${id}`);
+};
+
+export const updatePost = (id: number, post: IPostCreation) => {
+  return client.patch(`/posts/${id}`, post);
+};
